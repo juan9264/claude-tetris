@@ -47,7 +47,13 @@ jobs:
                Si es una edición, quita labels que ya no apliquen con `--remove-label`.
             3. Revisa el código relevante (game.js, index.html, style.css) para fundamentar el diagnóstico.
             4. Publica UN comentario de diagnóstico en español, que servirá luego para implementar
-               la solución. Primera línea exacta: `<!-- claude-triage -->`. Estructura:
+               la solución. Primera línea exacta: `<!-- claude-triage -->`.
+               El comentario DEBE estar en formato Markdown que GitHub renderice correctamente
+               (GitHub Flavored Markdown): encabezados `##`, listas con `-` o `1.`, **negritas**,
+               bloques de código con triple acento grave y lenguaje (```js), código en línea con
+               acento grave, y referencias como `game.js:123`. Al publicar con `gh`, pasa el cuerpo
+               con saltos de línea reales (por ejemplo `--body-file` o heredoc), nunca con `\n`
+               literales. Estructura:
                - **Resumen**: qué reporta el issue en 1-2 líneas.
                - **Tipo y severidad**: bug / mejora / pregunta; impacto.
                - **Causa probable**: con referencias `archivo:línea` y funciones involucradas.

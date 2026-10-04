@@ -4,7 +4,7 @@ const COLS = 10;
 const ROWS = 20;
 const BLOCK = 30;
 
-const COLORS = [
+const COLORS_DARK = [
   null,
   '#4dd0e1', // I - cyan
   '#ffd54f', // O - yellow
@@ -14,6 +14,23 @@ const COLORS = [
   '#90caf9', // J - azul pálido
   '#ffb74d', // L - orange
 ];
+
+// Paleta más saturada/oscura para fondo claro
+const COLORS_LIGHT = [
+  null,
+  '#00acc1', // I
+  '#f9a825', // O
+  '#8e24aa', // T
+  '#43a047', // S
+  '#e53935', // Z
+  '#1e88e5', // J
+  '#fb8c00', // L
+];
+
+const THEME_KEY = 'tetris-theme';
+let COLORS = COLORS_DARK;
+let gridColor = '#22222e';
+let highlightColor = 'rgba(255,255,255,0.12)';
 
 const PIECES = [
   null,
@@ -39,6 +56,7 @@ const overlay = document.getElementById('overlay');
 const overlayTitle = document.getElementById('overlay-title');
 const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
+const themeToggle = document.getElementById('theme-toggle');
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
@@ -163,13 +181,13 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
   context.fillStyle = color;
   context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
   // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
+  context.fillStyle = highlightColor;
   context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
   context.globalAlpha = 1;
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = gridColor;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -299,6 +317,33 @@ document.addEventListener('keydown', e => {
   updateHUD();
 });
 
-restartBtn.addEventListener('click', init);
+restartBtn.addEventListener('click', () => {
+  restartBtn.blur(); // evita que Space active el botón y a la vez el hard drop
+  init();
+});
+
+function applyTheme(theme, persist = true) {
+  const light = theme === 'light';
+  document.documentElement.dataset.theme = light ? 'light' : 'dark';
+  themeToggle.setAttribute('aria-checked', String(light));
+  COLORS = light ? COLORS_LIGHT : COLORS_DARK;
+  gridColor = light ? '#e3e5ee' : '#22222e';
+  highlightColor = light ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
+  if (persist) {
+    try { localStorage.setItem(THEME_KEY, light ? 'light' : 'dark'); } catch (e) {}
+  }
+  // repintar de inmediato (en pausa o game over el bucle no dibuja)
+  if (current) draw();
+  if (next) drawNext();
+}
+
+themeToggle.addEventListener('click', () => {
+  applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+  themeToggle.blur(); // evita que Space active el botón y a la vez el hard drop
+});
+
+let savedTheme = 'dark';
+try { savedTheme = localStorage.getItem(THEME_KEY) || 'dark'; } catch (e) {}
 
 init();
+applyTheme(savedTheme, false);

@@ -99,6 +99,7 @@ Define la estructura visual:
 - Un `<canvas id="board">` de **300 × 600** píxeles donde se renderiza el tablero.
 - Un panel lateral con `SCORE`, `LINES`, `LEVEL`, vista de la siguiente pieza y la lista de controles.
 - Un overlay para los estados **PAUSA** y **GAME OVER**.
+- Un interruptor (arriba a la derecha) para alternar entre modo **oscuro** (por defecto) y **claro**. La preferencia se guarda en `localStorage`.
 
 ### 2. `style.css`
 
